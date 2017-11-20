@@ -1,0 +1,66 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});
+	</script> 
+</head> 
+<body class="color_white"> 
+	<ul id="menu"></ul>
+	
+    <div id="page" class="color_white">
+		
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+   
+   <div class="top_sub_bg">
+    	<div class="top_sub_txt" id="lx18"></div>
+    	<a href="index.html" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div>
+    
+    <div id="js_all">
+    	<div class="about_bg">
+			<div class="about_logo_bg"><img src="images/about_logo.png" width="588" height="137" class="about_logo"></div>
+			<div class="about_app_v">v 1.0</div>
+			<div class="about_txt">
+			Your Company Name<br />
+			Street, number<br />
+			City<br />
+			Zip code<br />
+			</div>			
+			<a href="tel:+48123456789" class="about_phone">+48 123 456 789</a>
+			<a href="https://invedion.com" class="about_web">https://your-adress-here.com</a>
+			<hr class="about_hr">
+			
+			<a href="http://invedion.com" class="invedion"><img src="images/invedion.png" width="457" height="135"></a>       			
+        </div>                      
+    </div> 
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>      		                             
+</body>
+</html>

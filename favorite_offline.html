@@ -1,0 +1,179 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});											
+	</script> 
+</head> 
+<body> 
+	<ul id="menu"></ul>
+    
+    <div id="page">
+
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+    
+    <div class="top_sub_bg">
+    	<div class="top_sub_txt" id="lx17"></div>
+    	<a href="" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div> 	
+    <div id="js_all">
+		
+        <div class="loading_spinner"><img src="images/loading.gif" width="128" height="128"></div>
+        <script type="text/javascript">
+
+			function getQueryVariable(variable){
+			
+						var hash = window.location.hash;
+						var query = hash.slice(hash.indexOf('#') + 1);			
+  						query = query.replace(/ & /, " %26 ");			
+						var vars = query.split("&");
+
+						for (var i=0;i<vars.length;i++) {
+								var pair = vars[i].split("=");
+								if(pair[0] == variable){return pair[1];}
+						}
+						   return(false);
+					}
+						
+				$(window).on('hashchange', function() {
+				
+
+					var idb = getQueryVariable("idb");
+					var art = getQueryVariable("art");
+					
+					var adda = getQueryVariable("adda");
+					var addat = getQueryVariable("addat");
+					var dela = getQueryVariable("dela");
+					var chdok = '';					
+
+					if(dela){
+								
+								var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+		
+								db.transaction(function (tx) {
+
+									tx.executeSql('DELETE FROM mca_articles WHERE id = ?', [dela]);								
+
+								});	
+								art = '';
+							}
+					
+					if(art){ 
+								
+						var link_s = window.sessionStorage.getItem("link_s"); 
+						$(".top_sub_back").attr("href", link_s);								
+						
+						var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+
+									db.transaction(function (tx) {									  						
+
+										tx.executeSql("SELECT * FROM mca_articles WHERE id = ?", [art], function (tx, results) {
+
+											var len_db = results.rows.length, i;
+
+											if(len_db>0){ 
+	
+												$('#js_all').html(results.rows.item(0).article);
+
+												$('#incfont').click(function(){   
+													curSize= parseInt($('.content_full_title, .content_full_desc').css('font-size')) + 2;
+													curLS= parseInt($('.content_full_title, .content_full_desc').css('line-height')) + 3;
+												if(curSize<=80)
+													$('.content_full_title, .content_full_desc').css('font-size', curSize + 'px').css('line-height',curLS + 'px');
+													});
+
+												$('#decfont').click(function(){   
+													curSize= parseInt($('.content_full_title, .content_full_desc').css('font-size')) - 2;
+													curLS= parseInt($('.content_full_title, .content_full_desc').css('line-height')) - 3;
+												if(curSize>=30)
+													$('.content_full_title, .content_full_desc').css('font-size', curSize + 'px').css('line-height',curLS + 'px');
+													});
+
+												$('#deffont').click(function(){   
+													$('.content_full_title').css('font-size',50 + 'px').css('line-height',70 + 'px');
+													$('.content_full_desc').css('font-size',45 + 'px').css('line-height',70 + 'px');
+												});
+
+											} else {
+												
+												$('#js_all').slideDown("slow").show(100).html('<div class="ce">Your offline library is empty...</div>');	
+											}
+										});
+
+									});
+
+					}
+										
+									
+					if(!art || art == 'false' || art == 'indefined' || art == 'null' || art == ''){
+						
+						$('#js_all').html('');
+						$(".top_sub_back").attr("href", "library.html");
+						window.sessionStorage.setItem("link_s","favorite_offline.html");					
+						
+						var mca_access = localStorage.getItem("mca_access");
+						var user_id = localStorage.getItem("id_user");
+			 
+							var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+
+									db.transaction(function (tx) {									  						
+
+										tx.executeSql("SELECT id, title FROM mca_articles ORDER By ID DESC", [], function (tx, results) {
+
+											var len_db = results.rows.length, i;
+
+											if(len_db>0){ 
+
+												var lp = 1;
+
+												for (i = 0; i < len_db; i++) {
+													
+													$('#js_all').append('<a href="#art='+ results.rows.item(i).id +'" class="tc_list"><span class="tc_list_1_bg">'+ lp +'.</span> <span class="tc_list_2_bg">'+ results.rows.item(i).title +'</span></a>');
+													lp++;
+												}
+
+											} else {
+
+												$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="lx33"></div>');
+												changeLang(localStorage.getItem("language"));
+											}
+										});
+
+									});	
+																							
+					}					
+					
+				}).trigger('hashchange');
+			
+		</script>    
+	</div> 
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>        		                             
+</body>
+</html>

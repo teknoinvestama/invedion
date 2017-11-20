@@ -1,0 +1,99 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>	
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});											
+	</script> 
+</head> 
+<body> 
+	<ul id="menu"></ul>
+    
+    <div id="page" class="color_pattern">
+
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+    
+    <div class="top_sub_bg">
+    	<div class="top_sub_txt"></div>
+    	<a href="index.html" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div> 	
+    <div class="js_all">
+    
+    	<div class="t1" id="lx29"></div>
+		<a href="language.html#lang=en&lid=1" class="lang_txt"><img src="images/lang_1.jpg" width="70" height="45" class="lang_flag" />English <span id="lid1"></span></a>
+		<a href="language.html#lang=pl&lid=2" class="lang_txt"><img src="images/lang_2.jpg" width="70" height="45" class="lang_flag" />Polish <span id="lid2"></span></a>
+		<a href="language.html#lang=it&lid=3" class="lang_txt"><img src="images/lang_3.jpg" width="70" height="45" class="lang_flag" />Italian <span id="lid3"></span></a>
+      	<a href="language.html#lang=es&lid=4" class="lang_txt"><img src="images/lang_4.jpg" width="70" height="45" class="lang_flag" />Spanish <span id="lid4"></span></a>
+		<a href="language.html#lang=de&lid=5" class="lang_txt"><img src="images/lang_5.jpg" width="70" height="45" class="lang_flag" />German <span id="lid5"></span></a>
+		<a href="language.html#lang=fr&lid=6" class="lang_txt"><img src="images/lang_6.jpg" width="70" height="45" class="lang_flag" />French <span id="lid6"></span></a> 
+      	<a href="language.html#lang=gr&lid=7" class="lang_txt"><img src="images/lang_7.jpg" width="70" height="45" class="lang_flag" />Greek <span id="lid7"></span></a>
+		<a href="language.html#lang=ru&lid=8" class="lang_txt"><img src="images/lang_8.jpg" width="70" height="45" class="lang_flag" />Russian <span id="lid8"></span></a> 
+       	
+       	<script type="text/javascript">	
+	
+				function getQueryVariable(variable)
+					{			
+						var hash = window.location.hash;
+						var query = hash.slice(hash.indexOf('#') + 1);					
+						var vars = query.split("&");
+						for (var i=0;i<vars.length;i++) {
+								var pair = vars[i].split("=");
+								if(pair[0] == variable){return pair[1];}
+						}
+						   return(false);
+					}
+						
+				$(window).on('hashchange', function() {
+
+					var lang = getQueryVariable("lang");
+					var lid = getQueryVariable("lid");
+
+					if(lang && lid){
+
+						if(localStorage.getItem("lid")){ $('#lid'+ localStorage.getItem("lid")).html(''); }
+						
+						localStorage.setItem("language", lang);	
+						localStorage.setItem("lid", lid);												
+						
+						$('#lid'+ lid).html('<img src="images/icon_lt.png" width="50" height="50" class="icon_lt"/>');
+						changeLang(localStorage.getItem("language"));
+					}
+
+				}).trigger('hashchange');
+				
+				if(localStorage.getItem("lid")){ 
+					
+							$('#lid'+ localStorage.getItem("lid")).html('<img src="images/icon_lt.png" width="50" height="50" class="icon_lt"/>'); 
+				}
+		</script>
+    
+    </div>
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>         		                             
+</body>
+</html>

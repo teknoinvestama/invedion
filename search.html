@@ -1,0 +1,153 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});											
+	</script> 
+</head> 
+<body class="color_black"> 
+	<ul id="menu"></ul>
+	
+    <div id="page" class="color_pattern">
+		
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+	<div class="top_sub_bg">
+    	<div class="top_sub_txt" id="top_sub_txt"></div>
+    	<a href="index.html" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div> 
+ 
+    <div class="search_box">
+        <form id="mca_search">
+    		<input type="text" name="name" id="name" class="form_input" maxlength="30" >
+    		<input type="submit" name="submit" value="" id="search_btn">
+    	</form>
+    </div>
+    
+    <div class="main_search">
+    
+        <div class="loading_spinner"><img src="images/loading.gif" width="128" height="128"></div>
+        <script type="text/javascript">
+						
+			function getQueryVariable(variable)
+					{
+			
+						var hash = window.location.hash;
+						var query = hash.slice(hash.indexOf('#') + 1);			
+  						query = query.replace(/ & /, " %26 ");			
+						var vars = query.split("&");
+
+						for (var i=0;i<vars.length;i++) {
+								var pair = vars[i].split("=");
+								if(pair[0] == variable){return pair[1];}
+						}
+						   return(false);
+					}
+						
+			$(window).on('hashchange', function() {
+				
+				var back = getQueryVariable("back");
+				
+				if(back){
+					
+					window.sessionStorage.setItem("ct_s",back);
+						
+						$.ajax({
+								type: "GET",
+								url: "http://www.your_domain.com/mca_server/search.php?search="+ back +"",
+								jsonp: "callback",
+								dataType: "html",
+								crossDomain: true,
+								cache: false,
+								beforeSend: function() { $( ".loading_spinner" ).show(); },
+								success: function(data) {
+									
+								$( ".loading_spinner" ).hide();
+						
+									$('.main_search').html(data);							
+																									
+								},
+								error: function(){
+									
+ 									$('.main_search').slideDown("slow").show(100).html('<div class="ce_search" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+									changeLang(localStorage.getItem("language"));
+								}
+						});
+												
+                }
+				
+				
+			}).trigger('hashchange');
+			
+									
+				$('#mca_search').submit(function(event) {
+    
+                var name = $("#name").val()
+								               
+                if(name){
+					
+					window.sessionStorage.setItem("ct_s",name);
+						
+						$.ajax({
+								type: "GET",
+								url: "http://www.your_domain.com/mca_server/search.php?search="+ name +"",
+								jsonp: "callback",
+								dataType: "html",
+								crossDomain: true,
+								cache: false,
+								beforeSend: function() { $( ".loading_spinner" ).show(); },
+								success: function(data) {
+									
+								$( ".loading_spinner" ).hide();
+						
+									$('.main_search').html(data);							
+									changeLang(localStorage.getItem("language"));																
+								},
+								error: function(){
+									
+ 									$('.main_search').slideDown("slow").show(100).html('<div class="ce_search" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+									changeLang(localStorage.getItem("language"));
+								}
+						});
+												
+                } else {
+                   
+					$('.main_search').slideDown("slow").show(100).html('<div class="ce_search" id="error_search"></div>').delay(10000).slideUp("slow").hide(100);
+					changeLang(localStorage.getItem("language"));
+
+                }
+                event.preventDefault();
+            })			
+		</script>                
+   
+    
+    </div> 
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>      		                             
+</body>
+</html>

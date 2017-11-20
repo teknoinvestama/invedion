@@ -1,0 +1,415 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});											
+	</script> 
+</head> 
+<body> 
+	<ul id="menu"></ul>
+    
+    <div id="page">
+
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+    
+    <div class="top_sub_bg">
+    	<div class="top_sub_txt" id="lx17"></div>
+    	<a href="" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div> 	
+    <div id="js_all">
+		
+        <div class="loading_spinner"><img src="images/loading.gif" width="128" height="128"></div>
+        <script type="text/javascript">
+			
+			if(window.localStorage.getItem("mca_access")=='mca_ok!'){
+
+			function getQueryVariable(variable){
+			
+						var hash = window.location.hash;
+						var query = hash.slice(hash.indexOf('#') + 1);			
+  						query = query.replace(/ & /, " %26 ");			
+						var vars = query.split("&");
+
+						for (var i=0;i<vars.length;i++) {
+								var pair = vars[i].split("=");
+								if(pair[0] == variable){return pair[1];}
+						}
+						   return(false);
+					}
+						
+				$(window).on('hashchange', function() {
+				
+
+					var idb = getQueryVariable("idb");
+					var art = getQueryVariable("art");
+					
+					var addc = getQueryVariable("addc");
+					var delc = getQueryVariable("delc");
+					
+					var adda = getQueryVariable("adda");
+					var addat = getQueryVariable("addat");
+					var dela = getQueryVariable("dela");
+					var chdok = '';					
+
+					
+					if(art){ 
+						
+						if(dela){
+								
+								var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+		
+								db.transaction(function (tx) {
+
+									tx.executeSql('DELETE FROM mca_articles WHERE id = ?', [dela]);
+
+								});	
+								
+							}
+					
+						if(adda=='mobile'){ 
+										   
+								if(window.localStorage.getItem("mca_access")=='mca_ok!'){
+							
+									var ajax_link_ma = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&uid='+ user_id+'&chd=del';
+									ajax_function_2(ajax_link_ma);
+
+								} else {
+
+									var ajax_link_ma = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&chd=del';
+									ajax_function_2(ajax_link_ma);
+								}							
+
+								function ajax_function_2(ajax_link_ma){
+								
+									$.ajax({
+									type: "GET",
+									url: ajax_link_ma,
+									dataType: "html",
+									crossDomain: true,
+									beforeSend: function() { $( ".loading_spinner" ).show(); },
+									success: function(data) {
+
+									$( ".loading_spinner" ).hide();
+
+											var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+
+											db.transaction(function (tx) {
+
+												tx.executeSql("INSERT INTO mca_articles (id, title, article) VALUES(?,?,?)",[art, addat, data]);
+											});
+
+											navigator.notification.alert(window.vtxt4, null, window.vtxt2, window.vtxt3);
+											db_check();
+									},
+									error: function(){
+
+										navigator.notification.alert(window.vtxt5, null, window.vtxt2, window.vtxt3);
+									}
+									});
+									
+								}
+												
+							}	
+						
+		
+						if(adda!=='mobile' && (dela == 'indefined' || !dela || dela == 'null' || dela == '' || dela == 'false')){ 
+							
+							var link_s = window.sessionStorage.getItem("link_s"); 
+						}
+						$(".top_sub_back").attr("href", link_s);
+						
+						var link_s_art = window.sessionStorage.getItem("link_s_art");
+						window.sessionStorage.setItem("link_s",link_s_art);
+
+				
+						if(adda!='mobile'){ db_check(); }
+				
+				function db_check(){
+				
+						var db = openDatabase('mca_db', '1.0', 'mca database', 50 * 1024 * 1024);
+
+						db.transaction(function (tx) {									  						
+
+							tx.executeSql("SELECT * FROM mca_articles WHERE id = ?", [art], function (tx, results) {
+
+								var arl = results.rows.length, i;
+
+								if(arl>0){ 
+
+									chdok = 'del';
+									
+									if(localStorage.getItem("mca_access")=='mca_ok!'){
+							
+										var user_id = localStorage.getItem("id_user");
+										if(chdok == 'del'){ 
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&uid='+ user_id +'&chd='+ chdok; 
+											ajax_function_1(ajax_link);
+										}
+										else { 
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&uid='+ user_id; 
+											ajax_function_1(ajax_link);
+										}
+
+									} else {
+
+										if(chdok == 'del'){ 	
+
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art +'&chd='+ chdok;
+											ajax_function_1(ajax_link);
+										}
+										else { 		
+
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art;
+											ajax_function_1(ajax_link);
+										}
+									}
+
+								} else {
+
+									chdok = ''; 
+									
+									if(localStorage.getItem("mca_access")=='mca_ok!'){
+							
+										var user_id = localStorage.getItem("id_user");
+										if(chdok == 'del'){ 
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&uid='+ user_id +'&chd='+ chdok; 
+											ajax_function_1(ajax_link);
+										}
+										else { 
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art+'&uid='+ user_id; 
+											ajax_function_1(ajax_link);
+										}
+
+									} else {
+
+										if(chdok == 'del'){ 	
+
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art +'&chd='+ chdok;
+											ajax_function_1(ajax_link);
+										}
+										else { 		
+
+											var ajax_link = 'http://www.your_domain.com/mca_server/content_art.php?art='+ art;
+											ajax_function_1(ajax_link);
+										}
+									}
+								}
+							});
+
+						});
+			
+				}
+						
+						function ajax_function_1(ajax_link){
+
+							$.ajax({
+							type: "GET",
+							url: ajax_link,
+							dataType: "html",
+							crossDomain: true,
+							beforeSend: function() { $( ".loading_spinner" ).show(); },
+							success: function(data) {
+
+							$( ".loading_spinner" ).hide();
+
+							$('#js_all').html(data);
+
+								$('#incfont').click(function(){   
+									curSize= parseInt($('.content_full_title, .content_full_desc').css('font-size')) + 2;
+									curLS= parseInt($('.content_full_title, .content_full_desc').css('line-height')) + 3;
+								if(curSize<=80)
+									$('.content_full_title, .content_full_desc').css('font-size', curSize + 'px').css('line-height',curLS + 'px');
+									});
+
+								$('#decfont').click(function(){   
+									curSize= parseInt($('.content_full_title, .content_full_desc').css('font-size')) - 2;
+									curLS= parseInt($('.content_full_title, .content_full_desc').css('line-height')) - 3;
+								if(curSize>=30)
+									$('.content_full_title, .content_full_desc').css('font-size', curSize + 'px').css('line-height',curLS + 'px');
+									});
+
+								$('#deffont').click(function(){   
+									$('.content_full_title').css('font-size',50 + 'px').css('line-height',70 + 'px');
+									$('.content_full_desc').css('font-size',45 + 'px').css('line-height',70 + 'px');
+								});
+
+							},
+							error: function(){
+
+								$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+								changeLang(localStorage.getItem("language"));
+							}
+							});
+															
+						}
+						
+			
+						
+					}
+					
+
+					if(idb){	
+						
+						var link_s = window.sessionStorage.getItem("link_s"); 						
+						$(".top_sub_back").attr("href", link_s);					
+						window.sessionStorage.setItem("link_s","favorite.html#idb="+ idb);
+						window.sessionStorage.setItem("link_s_art","favorite.html");							  
+						var user_id = localStorage.getItem("id_user");
+						
+						
+							if(addc && localStorage.getItem("mca_access")=='mca_ok!'){
+					
+									$.ajax({
+									type: "GET",
+									url: "http://www.your_domain.com/mca_server/library_add.php?iaddc="+ addc +"&uid="+ user_id +"",
+									jsonp: "callback",
+									dataType: "jsonp",
+									crossDomain: true,
+									beforeSend: function() { $( ".loading_spinner" ).show(); },
+									success: function(data) {
+
+									$( ".loading_spinner" ).hide();
+										
+											var link_sad = window.sessionStorage.getItem("link_sad");											
+											$(".top_sub_back").attr("href", link_sad);
+
+										if(data.mca.status=='ok'){ 
+											
+											navigator.notification.alert(window.vtxt4, null, window.vtxt2, window.vtxt3);							
+										} 
+
+									},
+									error: function(){
+
+										$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+										changeLang(localStorage.getItem("language"));
+									}
+									});
+							}
+							
+							if(delc && localStorage.getItem("mca_access")=='mca_ok!'){
+					
+									$.ajax({
+									type: "GET",
+									url: "http://www.your_domain.com/mca_server/library_add.php?idelc="+ delc +"&uid="+ user_id +"",
+									jsonp: "callback",
+									dataType: "jsonp",
+									beforeSend: function() { $( ".loading_spinner" ).show(); },
+									success: function(data) {
+
+									$( ".loading_spinner" ).hide();
+										
+										if(data.mca.status=='ok'){ 
+
+											window.location="favorite.html";
+										}
+
+									},
+									error: function(){
+
+										$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+										changeLang(localStorage.getItem("language"));
+									}
+									});
+							}
+																	
+						var mca_access = localStorage.getItem("mca_access");
+						
+						$.ajax({
+						type: "GET",
+						url: "http://www.your_domain.com/mca_server/content_art.php?idb="+ idb +"&mca_access="+ mca_access +"&uid="+ user_id +"",
+						dataType: "html",
+						crossDomain: true,
+						beforeSend: function() { $( ".loading_spinner" ).show(); },
+						success: function(data) {
+
+						$( ".loading_spinner" ).hide();
+						
+							$('#js_all').html(data);
+							changeLang(localStorage.getItem("language"));
+
+						},
+						error: function(){
+
+							$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+							changeLang(localStorage.getItem("language"));
+						}
+						});						
+					}
+					
+									
+					if((!idb || idb == 'false' || idb == 'indefined' || idb == 'null' || idb == '') && (!art || art == 'false' || art == 'indefined' || art == 'null' || art == '')){
+						
+						$(".top_sub_back").attr("href", "library.html");
+						window.sessionStorage.setItem("link_s","favorite.html");					
+						
+						var mca_access = localStorage.getItem("mca_access");
+						var user_id = localStorage.getItem("id_user");
+		
+						$.ajax({
+						type: "GET",
+						url: "http://www.your_domain.com/mca_server/favorite.php?mca_access="+ mca_access +"&uid="+ user_id +"",
+						dataType: "html",
+						crossDomain: true,
+						beforeSend: function() { $( ".loading_spinner" ).show(); },
+						success: function(data) {
+
+						$( ".loading_spinner" ).hide();
+	
+							$('#js_all').html(data);
+							changeLang(localStorage.getItem("language"));
+
+						},
+						error: function(){
+
+							$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+							changeLang(localStorage.getItem("language"));
+						}
+						});						
+					
+					}
+					
+					
+				}).trigger('hashchange');
+				
+			} else {
+				
+				setTimeout(function() { window.location = "login.html"; }, 2000);
+				$(".top_sub_back").attr("href", "library.html");
+				$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="lx28"></div>');
+				changeLang(localStorage.getItem("language"));			
+				
+			}
+
+		</script>    
+	</div> 
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>        		                             
+</body>
+</html>

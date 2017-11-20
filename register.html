@@ -1,0 +1,124 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta charset="utf-8"> 
+	<title>Magazine Content App</title> 
+	<meta id="Viewport" name="viewport">      		 
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="plugins/jquery-3.1.1.min.js"></script> 
+    <script src="cordova.js"></script>
+	<script type="text/javascript" src="plugins/monaca.viewport.js"></script>
+	<script type="text/javascript"> 	   
+    function update(scale) {
+        document.getElementById("useragent").textContent = navigator.userAgent;
+        document.getElementById("scale").textContent = scale || "none";
+    
+        if (monaca.viewport.isAndroid()) {
+            document.getElementById("device").textContent = "Android";
+        } else if (monaca.viewport.isPCBrowser()) {
+            document.getElementById("device").textContent = "PC";
+        }
+	}		
+		monaca.viewport({
+			width : 1080,
+			onAdjustment : update
+		});											
+	</script> 
+</head> 
+<body> 
+	<ul id="menu"></ul>
+    
+    <div id="page" class="color_pattern">
+
+	<div class="top_bg">
+		<a href="search.html" class="s2"><img src="images/icon_search.png" width="94" height="87" class="s1" style="left:200px;"></a>
+		<a href="#" id="toggle-menu" class="s2"><img src="images/icon_menu.png" width="94" height="87" class="s1" style="left:60px;"></a>
+		<a href="index.html" class="logo"><img src="images/top_logo.png" width="422" height="100"></a>
+	</div>
+    
+    <div class="top_sub_bg">
+    	<div class="top_sub_txt"></div>
+    	<a href="index.html" class="top_sub_back"><img src="images/icon_back.png" width="54" height="50"></a>    
+    </div> 	
+    <div class="js_all">
+    
+    <div class="t1" id="lx6"></div>
+      <div class="register_bg">
+        <form id="register_form">
+            <div class="login_input_bg" style="top:0px;" id="lx7"></div><input type="text" name="username" id="username" value="" class="login" style="top:0px;" maxlength="30" required />
+            <div class="login_input_bg" style="top:215px;" id="lx8"></div><input type="password" name="password" id="password" value="" class="login" style="top:215px;" maxlength="30" required />
+            <div class="login_input_bg" style="top:430px;" id="lx9"></div><input type="password" name="repassword" id="repassword" value="" class="login" style="top:430px;" maxlength="30" required />
+        	<input type="submit" value="Register" id="register">
+        </form>
+        <a href="login.html" class="t2" style="bottom:35px;" id="lx10">.</a>
+      </div>      
+     	<hr class="login_hr">
+    	<div id="js_error"></div>
+    
+    	<div class="loading_spinner_low"><img src="images/loading.gif" width="128" height="128"></div>
+        <script type="text/javascript">
+
+		$('#register_form').submit(function(event) {
+
+			var user = $("#username").val()
+			var pass = $("#password").val()
+			var repass = $("#repassword").val()
+		
+			if(user && pass && repass){ 
+
+			$.ajax({
+					type: "GET",
+					url: "http://www.your_domain.com/mca_server/register.php?login="+ user +"&pass="+ pass +"&repass="+ repass +"",
+					jsonp: "callback",
+					dataType: "jsonp",
+					crossDomain: true,
+					beforeSend: function() { $( ".loading_spinner_low" ).show(); },
+					success: function(data) {
+						
+						$( ".loading_spinner_low" ).hide();
+
+						if(data.mca.status=='ok'){ 
+
+							$('#js_error').slideDown("slow").show(100).html('<div class="ce_success" id="lx19"></div>').delay(3000).slideUp("slow").hide(100);
+							changeLang(localStorage.getItem("language"));
+							
+							setTimeout(function () { window.location="login.html"; }, 5000);
+								
+						}
+						
+						if(data.mca.status=='user_exist'){  
+								$('#js_error').slideDown("slow").show(100).html('<div class="ce_login" id="lx20"></div>').delay(10000).slideUp("slow").hide(100);
+								changeLang(localStorage.getItem("language"));
+						}
+						if(data.mca.status=='password'){  
+								$('#js_error').slideDown("slow").show(100).html('<div class="ce_login" id="lx21"></div>').delay(10000).slideUp("slow").hide(100);			changeLang(localStorage.getItem("language"));	
+						}
+						if(data.mca.status=='incorrect_mail'){  
+								$('#js_error').slideDown("slow").show(100).html('<div class="ce_login" id="lx22"></div>').delay(10000).slideUp("slow").hide(100);			changeLang(localStorage.getItem("language"));	
+						}
+						if(data.mca.status=='fields'){  
+								$('#js_error').slideDown("slow").show(100).html('<div class="ce_login" id="lx23"></div>').delay(10000).slideUp("slow").hide(100);			changeLang(localStorage.getItem("language"));	
+						}
+																						
+					},
+					error: function(){
+						
+						$('#js_all').slideDown("slow").show(100).html('<div class="ce" id="error"></div>').delay(10000).slideUp("slow").hide(100);
+						changeLang(localStorage.getItem("language"));
+					}
+				});	
+			} else {
+								
+				$('#js_error').slideDown("slow").show(100).html('<div class="ce_login" id="lx24"></div>').delay(10000).slideUp("slow").hide(100);
+				changeLang(localStorage.getItem("language"));
+			}
+			event.preventDefault();
+		})		
+    	</script>
+    	</div>
+    
+    </div>
+    <script src="plugins/menu.js"></script>
+    <script src="plugins/language.js"></script>          		                             
+</body>
+</html>
